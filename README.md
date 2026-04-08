@@ -42,6 +42,13 @@ This repository was created as the submission repository for ASMRDIY so judges c
 - App Store link: https://apps.apple.com/us/app/asmr-diy/id6760271809
 - Live demo: https://asmrdiy.replit.app
 
+## Downloadable build
+
+For convenience, a packaged build of the project is also attached to the GitHub release.
+
+- Release download page: [ASMR DIY release](https://github.com/jonathaniraheta-web/ASMRDIY/releases/tag/ASMRDIY)
+- Packaged build: `asmrdiy.zip`
+
 ## Author
 
 Jonathan Iraheta
