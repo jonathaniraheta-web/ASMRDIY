@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ASMR DIY — Relax & Create</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Georgia', serif;
+      background: #1a1a2e;
+      color: #e0d7f5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      letter-spacing: 0.08em;
+      color: #c9b8f0;
+      margin-bottom: 0.4rem;
+    }
+
+    .subtitle {
+      font-size: 1rem;
+      color: #9b8ec4;
+      margin-bottom: 2.5rem;
+      font-style: italic;
+    }
+
+    .card {
+      background: #16213e;
+      border: 1px solid #2e2a55;
+      border-radius: 16px;
+      padding: 2rem;
+      width: 100%;
+      max-width: 600px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    }
+
+    label {
+      display: block;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #9b8ec4;
+      margin-bottom: 0.4rem;
+    }
+
+    input[type="text"],
+    textarea {
+      width: 100%;
+      background: #0f3460;
+      border: 1px solid #2e2a55;
+      border-radius: 8px;
+      color: #e0d7f5;
+      font-family: inherit;
+      font-size: 1rem;
+      padding: 0.75rem 1rem;
+      margin-bottom: 1.4rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    input[type="text"]:focus,
+    textarea:focus {
+      border-color: #7c6fcd;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 140px;
+    }
+
+    button {
+      width: 100%;
+      padding: 0.9rem;
+      background: linear-gradient(135deg, #7c6fcd, #5a4fa8);
+      border: none;
+      border-radius: 10px;
+      color: #fff;
+      font-size: 1.05rem;
+      letter-spacing: 0.06em;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+
+    button:disabled { opacity: 0.55; cursor: not-allowed; }
+
+    #status {
+      margin-top: 1.2rem;
+      text-align: center;
+      font-size: 0.95rem;
+      color: #9b8ec4;
+      min-height: 1.4rem;
+    }
+
+    #player {
+      margin-top: 1.4rem;
+      width: 100%;
+      display: none;
+    }
+
+    .hint {
+      font-size: 0.78rem;
+      color: #6b5f99;
+      margin-top: -1rem;
+      margin-bottom: 1.4rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>🌿 ASMR DIY</h1>
+  <p class="subtitle">Calming step-by-step audio for your creative projects</p>
+
+  <div class="card">
+    <label for="title">Project Title</label>
+    <input type="text" id="title" placeholder="e.g. Macramé Wall Hanging" />
+
+    <label for="steps">Steps <span style="text-transform:none;font-size:0.8em">(one per line)</span></label>
+    <textarea id="steps" placeholder="Cut four strands of rope, each 2 meters long.
+Fold each strand in half and attach to the dowel with a lark's head knot.
+Begin knotting with square knots..."></textarea>
+    <p class="hint">Write each step on its own line. The narration will guide you through gently.</p>
+
+    <button id="generateBtn" onclick="generate()">✨ Generate ASMR Audio</button>
+    <div id="status"></div>
+    <audio id="player" controls></audio>
+  </div>
+
+  <script>
+    async function generate() {
+      const title = document.getElementById('title').value.trim();
+      const steps = document.getElementById('steps').value.trim();
+      const btn = document.getElementById('generateBtn');
+      const status = document.getElementById('status');
+      const player = document.getElementById('player');
+
+      if (!title || !steps) {
+        status.textContent = 'Please fill in both the title and steps.';
+        return;
+      }
+
+      btn.disabled = true;
+      player.style.display = 'none';
+      status.textContent = '🎙️ Generating your ASMR narration…';
+
+      try {
+        const res = await fetch('/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title, steps }),
+        });
+
+        if (!res.ok) {
+          const err = await res.json();
+          status.textContent = '⚠️ ' + (err.error || 'Something went wrong.');
+          return;
+        }
+
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        player.src = url;
+        player.style.display = 'block';
+        player.play();
+        status.textContent = '🌙 Your ASMR guide is ready. Relax and enjoy.';
+      } catch (e) {
+        status.textContent = '⚠️ Network error. Please try again.';
+      } finally {
+        btn.disabled = false;
+      }
+    }
+  </script>
+</body>
+</html>
